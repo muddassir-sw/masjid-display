@@ -1,4 +1,30 @@
-*.log
-*.tar.gz
-*.img
+# Visual Studio
+.vs/
 .vscode/
+
+# Logs
+*.log
+
+# Raspberry Pi images/backups
+*.img
+*.img.xz
+*.tar.gz
+*.zip
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# Environment
+.env
+.env.*
+
+# Temporary
+*.tmp
