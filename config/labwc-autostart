@@ -1,0 +1,8 @@
+
+# BEGIN TAQWA DISPLAY
+# Managed by taqwa-display. Re-run install.sh after changing project files.
+pkill -x swayidle >/dev/null 2>&1 || true
+/usr/bin/wlopm --on '*' >/dev/null 2>&1 || true
+/usr/bin/unclutter --timeout 1 --jitter 5 --ignore-scrolling &
+"/home/piuser/.local/share/taqwa-display/taqwa-launcher" &
+# END TAQWA DISPLAY

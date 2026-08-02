@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+out="${1:-$HOME/taqwa-display-backup-$(date +%Y%m%d-%H%M%S).tar.gz}"
+tar -czf "$out" \
+    "$HOME/.config/taqwa-display" \
+    "$HOME/.config/labwc/autostart" \
+    "$HOME/.local/share/taqwa-display" 2>/dev/null
+echo "Backup created: $out"

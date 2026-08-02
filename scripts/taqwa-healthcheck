@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -u
+
+APP_NAME="taqwa-display"
+CONFIG_DIR="$HOME/.config/$APP_NAME"
+CONFIG_FILE="$CONFIG_DIR/config.env"
+LOG_DIR="$CONFIG_DIR/logs"
+LOG_FILE="$LOG_DIR/health.log"
+STATUS_FILE="$CONFIG_DIR/status.txt"
+
+mkdir -p "$LOG_DIR"
+[[ -r "$CONFIG_FILE" ]] && source "$CONFIG_FILE"
+DISPLAY_URL="${DISPLAY_URL:-https://masjidetaqwa.co.uk/masjid/main}"
+
+timestamp="$(date --iso-8601=seconds)"
+temperature="unknown"
+[[ -r /sys/class/thermal/thermal_zone0/temp ]] && \
+  temperature="$(awk '{printf "%.1f°C", $1/1000}' /sys/class/thermal/thermal_zone0/temp)"
+
+disk="$(df -h "$HOME" | awk 'NR==2 {print $5 " used, " $4 " free"}')"
+browser="down"
+pgrep -x chromium >/dev/null 2>&1 && browser="running"
+
+internet="down"
+http_status="unreachable"
+if curl -fsS --max-time 15 -o /dev/null "$DISPLAY_URL"; then
+    internet="up"
+    http_status="ok"
+fi
+
+line="$timestamp | browser=$browser | website=$http_status | temp=$temperature | disk=$disk"
+echo "$line" >> "$LOG_FILE"
+printf '%s\n' "$line" > "$STATUS_FILE"
+
+# Keep logs bounded.
+tail -n 2000 "$LOG_FILE" > "$LOG_FILE.tmp" && mv "$LOG_FILE.tmp" "$LOG_FILE"

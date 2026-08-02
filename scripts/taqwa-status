@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -u
+CONFIG_DIR="$HOME/.config/taqwa-display"
+echo "=== Taqwa Display ==="
+if [[ -f "$CONFIG_DIR/status.txt" ]]; then
+    cat "$CONFIG_DIR/status.txt"
+else
+    echo "No health-check result yet."
+fi
+echo
+echo "Chromium processes:"
+pgrep -a chromium || echo "Chromium is not running."
+echo
+echo "Timer:"
+systemctl --user --no-pager status taqwa-healthcheck.timer 2>/dev/null | sed -n '1,8p' || true
+echo
+echo "Recent launcher log:"
+tail -n 8 "$CONFIG_DIR/logs/launcher.log" 2>/dev/null || echo "No launcher log yet."

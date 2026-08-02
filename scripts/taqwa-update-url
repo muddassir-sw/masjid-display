@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+CONFIG="$HOME/.config/taqwa-display/config.env"
+[[ -f "$CONFIG" ]] || { echo "Missing $CONFIG"; exit 1; }
+
+new_url="${1:-}"
+if [[ -z "$new_url" ]]; then
+    read -r -p "New display URL: " new_url
+fi
+[[ "$new_url" =~ ^https?:// ]] || { echo "URL must begin with http:// or https://"; exit 1; }
+
+escaped="$(printf '%s' "$new_url" | sed 's/[&|]/\\&/g')"
+sed -i "s|^DISPLAY_URL=.*|DISPLAY_URL=\"$escaped\"|" "$CONFIG"
+echo "Updated URL to $new_url"
+echo "Restarting Chromium..."
+pkill -x chromium 2>/dev/null || true

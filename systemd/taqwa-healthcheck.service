@@ -1,0 +1,7 @@
+[Unit]
+Description=Taqwa Display health check
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/piuser/.local/share/taqwa-display/taqwa-healthcheck

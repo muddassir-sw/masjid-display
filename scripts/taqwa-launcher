@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+set -u
+
+APP_NAME="taqwa-display"
+CONFIG_DIR="$HOME/.config/$APP_NAME"
+CONFIG_FILE="$CONFIG_DIR/config.env"
+LOG_DIR="$CONFIG_DIR/logs"
+LOG_FILE="$LOG_DIR/launcher.log"
+PROFILE_DIR="$CONFIG_DIR/chromium-profile"
+
+mkdir -p "$LOG_DIR" "$PROFILE_DIR"
+
+exec >>"$LOG_FILE" 2>&1
+echo "[$(date --iso-8601=seconds)] launcher starting"
+
+# Give the desktop, network and display time to settle.
+sleep 5
+
+# Keep the display powered.
+pkill -x swayidle >/dev/null 2>&1 || true
+wlopm --on '*' >/dev/null 2>&1 || true
+
+while true; do
+    if [[ ! -r "$CONFIG_FILE" ]]; then
+        echo "[$(date --iso-8601=seconds)] missing configuration: $CONFIG_FILE"
+        sleep 10
+        continue
+    fi
+
+    # Reload configuration before every Chromium start.
+    # This allows URL changes without rebooting the Raspberry Pi.
+    unset DISPLAY_URL DISPLAY_OUTPUT DISPLAY_TRANSFORM DISPLAY_MODE
+    # shellcheck disable=SC1090
+    source "$CONFIG_FILE"
+
+    DISPLAY_URL="${DISPLAY_URL:-https://www.masjidetaqwa.co.uk/TaqwaNew/3MPrayerTimes_Published1/main.aspx}"
+    DISPLAY_OUTPUT="${DISPLAY_OUTPUT:-HDMI-A-1}"
+    DISPLAY_TRANSFORM="${DISPLAY_TRANSFORM:-90}"
+    DISPLAY_MODE="${DISPLAY_MODE:-}"
+
+    wlopm --on '*' >/dev/null 2>&1 || true
+
+    wlr-randr \
+        --output "$DISPLAY_OUTPUT" \
+        --mode "$DISPLAY_MODE" \
+        --transform "$DISPLAY_TRANSFORM" || \
+        echo "[$(date --iso-8601=seconds)] warning: could not configure $DISPLAY_OUTPUT"
+
+    echo "[$(date --iso-8601=seconds)] starting Chromium: $DISPLAY_URL"
+
+    chromium \
+      --ozone-platform=wayland \
+      --kiosk \
+      --no-first-run \
+      --no-default-browser-check \
+      --password-store=basic \
+      --disable-session-crashed-bubble \
+      --disable-infobars \
+      --disable-translate \
+      --disable-features=Translate,MediaRouter \
+      --overscroll-history-navigation=0 \
+      --autoplay-policy=no-user-gesture-required \
+      --check-for-update-interval=31536000 \
+      --user-data-dir="$PROFILE_DIR" \
+      "$DISPLAY_URL"
+
+    exit_code=$?
+    echo "[$(date --iso-8601=seconds)] Chromium exited with code $exit_code; restarting in 3 seconds"
+    sleep 3
+done
