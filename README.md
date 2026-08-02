@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Latest Release](https://img.shields.io/github/v/release/muddassir-sw/masjid-display?display_name=tag&sort=semver)](https://github.com/muddassir-sw/masjid-display/releases/latest)
-[![Raspberry Pi](https://img.shields.io/badge/Raspberry%20Pi-4%20Recommended-C51A4A?logo=raspberrypi&logoColor=white)](https://www.raspberrypi.com/)
+[![Platform](https://img.shields.io/badge/Platform-Raspberry%20Pi-C51A4A?logo=raspberrypi&logoColor=white)](https://www.raspberrypi.com/)
 [![Shell](https://img.shields.io/badge/Shell-Bash-4EAA25?logo=gnubash&logoColor=white)](https://www.gnu.org/software/bash/)
 [![Raspberry Pi OS](https://img.shields.io/badge/OS-Raspberry%20Pi%20OS-A22846?logo=raspberrypi&logoColor=white)](https://www.raspberrypi.com/software/)
 
